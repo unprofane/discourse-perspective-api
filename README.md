@@ -1,4 +1,19 @@
-# Discourse Perspective plugin
+# Discourse Perspective plugin, with the host as a setting
+
+This is [discourse/discourse-perspective-api](https://github.com/discourse/discourse-perspective-api) with one change: a site setting, `perspective_api_host`, for the address the plugin calls. Google's Perspective API stops answering after **December 31, 2026**, and the official plugin posts to Google's host with no way to change it. Maintained by [Unprofane](https://unprofane.com); the rest of the plugin is Discourse's, under the same GNU GPL v2.
+
+## Switching host
+
+1. Install this repository instead of Discourse's: in `app.yml`, under `hooks: after_code:`, replace `https://github.com/discourse/discourse-perspective-api.git` with `https://github.com/unprofane/discourse-perspective-api.git`, then rebuild (`./launcher rebuild app`).
+2. In the admin site settings, search for `perspective api host` and set it to a Perspective-compatible host, such as `https://api.unprofane.com` ([Unprofane's drop-in](https://unprofane.com/perspective/discourse/)), and put that host's key in `perspective google api key`.
+
+Left blank or at its default, the setting keeps Google's host, so the plugin behaves exactly as Discourse's does. The scores keep their meaning: the thresholds, the flags, the composer warning and the backfill custom fields are unchanged.
+
+Discourse's own hosting runs only the plugins Discourse ships, so a forum hosted by Discourse cannot install this fork; a self-hosted forum, or a host that installs plugins from a repository you name, can. [The guide](https://unprofane.com/perspective/discourse/) covers each case.
+
+---
+
+# Discourse Perspective plugin (upstream README)
 
 https://meta.discourse.org/t/google-perspective-api-plugin/98733
 

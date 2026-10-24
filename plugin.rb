@@ -5,7 +5,7 @@
 # meta_topic_id: 98733
 # version: 1.2
 # authors: Erick Guan
-# url: https://github.com/discourse/discourse-perspective-api
+# url: https://github.com/unprofane/discourse-perspective-api
 
 enabled_site_setting :perspective_enabled
 
