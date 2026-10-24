@@ -182,6 +182,26 @@ describe DiscoursePerspective do
       end
     end
 
+    describe "perspective_api_host" do
+      it "posts to Google's host by default" do
+        stub =
+          stub_request(:post, API_ENDPOINT).to_return(status: 200, body: API_RESPONSE_TOXICITY_BODY)
+        DiscoursePerspective.check_post_toxicity(post)
+        expect(stub).to have_been_requested
+      end
+
+      it "posts to the host in the setting, without a trailing slash" do
+        SiteSetting.perspective_api_host = "https://perspective.example.com/"
+        stub =
+          stub_request(
+            :post,
+            "https://perspective.example.com/v1alpha1/comments:analyze?key=",
+          ).to_return(status: 200, body: API_RESPONSE_TOXICITY_BODY)
+        expect(DiscoursePerspective.check_post_toxicity(post)).to eq(score: 0.015122943)
+        expect(stub).to have_been_requested
+      end
+    end
+
     context "with severe toxicity" do
       before do
         stub_request(:post, API_ENDPOINT).to_return(

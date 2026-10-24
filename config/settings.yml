@@ -18,6 +18,8 @@ discourse_perspective:
       - severe toxicity (experimental)
   perspective_google_api_key:
     default: ""
+  perspective_api_host:
+    default: "https://commentanalyzer.googleapis.com"
   perspective_check_private_message:
     default: false
     client: true

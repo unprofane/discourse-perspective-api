@@ -49,6 +49,11 @@ module DiscoursePerspective
     }
   end
 
+  # The host from perspective_api_host, Google's when the setting is blank.
+  def self.api_host
+    SiteSetting.perspective_api_host.presence&.chomp("/") || GOOGLE_API_DOMAIN
+  end
+
   def self.unload_json(response)
     begin
       json = MultiJson.load(response)
@@ -116,8 +121,9 @@ module DiscoursePerspective
   def self.score_comment(post)
     @mutex.synchronize do
       analyze_comment = AnalyzeComment.new(post, post&.user_id)
+      host = self.api_host
 
-      if @conn && @conn_created < 1.minute.ago
+      if @conn && (@conn_created < 1.minute.ago || @conn_host != host)
         # this avoids a leak, Google have tons of IPs and certs just keep piling on
         begin
           @conn.reset
@@ -129,7 +135,8 @@ module DiscoursePerspective
 
       if !@conn
         @conn_created = Time.zone.now
-        @conn = Excon.new(GOOGLE_API_DOMAIN, self.proxy_request_options)
+        @conn_host = host
+        @conn = Excon.new(host, self.proxy_request_options)
       end
 
       body = analyze_comment.to_json
@@ -159,7 +166,7 @@ module DiscoursePerspective
         end
         # get rid of bad connection
         @conn = nil
-        raise NetworkError, "Excon had some problems with Google's Perspective API. #{e}"
+        raise NetworkError, "Excon had some problems with the Perspective API at #{host}. #{e}"
       end
     end
   end
